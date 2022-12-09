@@ -1,0 +1,80 @@
+{
+  "compilerOptions": {
+    "types": [
+      "node"
+    ],
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "skipLibCheck": true,
+    "lib": [
+      "ES2020"
+    ],
+    "allowSyntheticDefaultImports": true,
+    "importHelpers": false,
+    "alwaysStrict": true,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "strictNullChecks": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "removeComments": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types",
+      "/src/@types"
+    ],
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "strict": true,
+    "paths": {
+      "@tests/*": [
+        "__tests__/*"
+      ],
+      "@config/*": [
+        "src/config/*"
+      ],
+      "@models/*": [
+        "src/models/*"
+      ],
+      "@helpers/*": [
+        "src/helpers/*"
+      ],
+      "@controller/*": [
+        "src/controllers/*"
+      ],
+      "@service/*": [
+        "./src/services/*"
+      ],
+      "@middlewares/*": [
+        "./src/middlewares/*"
+      ],
+      "@routes/*": [
+        "./src/routes/*"
+      ],
+      "@error/*": [
+        "./src/err/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "__tests__/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}

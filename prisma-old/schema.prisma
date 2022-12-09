@@ -1,0 +1,290 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String      @id @default(uuid())
+  name            String
+  cellphone       String?
+  telephone       String?
+  email           String      @unique
+  password        String
+  active          Boolean     @default(true)
+  deleted         Boolean     @default(false)
+  profile         Profile?    @relation(fields: [profileId], references: [id])
+  profileId       String?     @map("profile_id")
+  company         Company?    @relation(fields: [companyId], references: [id])
+  companyId       String?     @map("company_id")
+  unity           Unity?      @relation(fields: [unityId], references: [id])
+  unityId         String?     @map("unity_id")
+  department      Department? @relation(fields: [departmentId], references: [id])
+  departmentId    String?     @map("department_id")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+  responsibleUser Collect[]   @relation(name: "responsible_user")
+  analystUser     Collect[]   @relation(name: "analyst_user")
+
+  @@map("users")
+}
+
+model Company {
+  id            String          @id @default(uuid())
+  socialReason  String          @unique @map("social_reason")
+  fantasyName   String?         @map("fantasy_name")
+  document      String?
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  unity         Unity[]
+  profile       Profile[]
+  historyUpload HistoryUpload[]
+  user          User[]
+
+  @@map("companies")
+}
+
+model Bacterium {
+  id                    String       @id @default(uuid())
+  name                  String?
+  fictitiousName        String?      @map("fictitious_name")
+  description           String?
+  image                 String?
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+  departments           Department[]
+  collectFirstBacterium Collect[]    @relation("first_bacterium")
+  collectSecBacterium   Collect[]    @relation("sec_bacterium")
+
+  @@map("bacteria")
+}
+
+model Module {
+  id            String          @id @default(uuid())
+  name          String          @unique
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  moduleProfile ModuleProfile[]
+
+  @@map("modules")
+}
+
+model Unity {
+  id          String       @id @default(uuid())
+  fantasyName String?      @map("fantasy_name")
+  document    String?
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  company     Company      @relation(fields: [companyId], references: [id])
+  companyId   String       @map("company_id")
+  department  Department[]
+  user        User[]
+
+  @@map("units")
+}
+
+model Department {
+  id               String             @id @default(uuid())
+  fantasyName      String?            @map("fantasy_name")
+  responsible      String?
+  description      String?
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+  unity            Unity              @relation(fields: [unityId], references: [id])
+  unityId          String             @map("unity_id")
+  project          Project[]
+  reactor          Reactor[]
+  bacteria         Bacterium[]
+  PhysicalChemical PhysicalChemical[]
+  user             User[]
+
+  @@map("departments")
+}
+
+model Project {
+  id           String     @id @default(uuid())
+  name         String
+  startDate    DateTime?  @map("start_date") @db.Date
+  endDate      DateTime?  @map("end_date") @db.Date
+  description  String?
+  active       Boolean?
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String     @map("department_id")
+
+  @@map("projects")
+}
+
+model Reactor {
+  id           String         @id @default(uuid())
+  name         String
+  description  String?
+  active       Boolean?       @default(true)
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  department   Department     @relation(fields: [departmentId], references: [id])
+  departmentId String         @map("department_id")
+  collectPoint CollectPoint[]
+  collect      Collect[]
+
+  @@map("reactors")
+}
+
+model Profile {
+  id            String          @id @default(uuid())
+  name          String          @unique
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  company       Company?        @relation(fields: [companyId], references: [id])
+  companyId     String?         @map("company_id")
+  moduleProfile ModuleProfile[]
+  user          User[]
+
+  @@map("profiles")
+}
+
+model CollectPoint {
+  id          String    @id @default(uuid())
+  name        String?
+  description String?
+  latitude    String?
+  longitude   String?
+  image       String?
+  active      Boolean?  @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  reactor     Reactor   @relation(fields: [reactorId], references: [id])
+  reactorId   String    @map("reactor_id")
+  collect     Collect[]
+
+  @@map("collect_points")
+}
+
+model ModuleProfile {
+  id         String   @id @default(uuid())
+  permission String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  module     Module   @relation(fields: [moduleId], references: [id])
+  moduleId   String   @map("module_id")
+  profile    Profile  @relation(fields: [profileId], references: [id])
+  profileId  String   @map("profile_id")
+
+  @@map("modules_profiles")
+}
+
+model PhysicalChemical {
+  id            String     @id @default(uuid())
+  collectDate   DateTime   @map("collect_date") @db.Date
+  place         String?
+  position      String?
+  parameter     String?
+  unitParameter String?    @map("unit_parameter")
+  result        Float?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  department    Department @relation(fields: [departmentId], references: [id])
+  departmentId  String     @map("department_id")
+
+  @@map("physical_chemicals")
+}
+
+model HistoryUpload {
+  id        String   @id @default(uuid())
+  nameFile  String   @map("name_file")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  company   Company  @relation(fields: [companyId], references: [id])
+  companyId String   @map("company_id")
+
+  @@map("history_uploads")
+}
+
+model Collect {
+  id                             String       @id @default(uuid())
+  createdAt                      DateTime     @default(now()) @map("created_at")
+  updatedAt                      DateTime     @updatedAt @map("updated_at")
+  reactor                        Reactor      @relation(fields: [reactorId], references: [id])
+  reactorId                      String       @map("reactor_id")
+  collectPoint                   CollectPoint @relation(fields: [collectPointId], references: [id])
+  collectPointId                 String       @map("collect_point_id")
+  responsible                    User         @relation("responsible_user", fields: [responsibleId], references: [id])
+  responsibleId                  String       @map("responsible_id")
+  analyst                        User?        @relation("analyst_user", fields: [analystId], references: [id])
+  analystId                      String?      @map("analyst_id")
+  step                           Int
+  sampleNumber                   String       @map("sample_number")
+  status                         String       @default("Pendente")
+  temperature                    String?
+  ph                             String?
+  oxygen                         String?
+  workShift                      String?      @map("work_shift")
+  analysisTime                   DateTime     @map("analysis_time")
+  firstBacterium                 Bacterium?   @relation("first_bacterium", fields: [firstBacteriumId], references: [id])
+  firstBacteriumId               String?      @map("first_bacterium_id")
+  secBacterium                   Bacterium?   @relation("sec_bacterium", fields: [secBacteriumId], references: [id])
+  secBacteriumId                 String?      @map("sec_bacterium_id")
+  firstAbundance                 String?      @map("first_abundance")
+  secAbundance                   String?      @map("sec_abundance")
+  firstFilamentEffect            String?      @map("first_filament_effect")
+  secFilamentEffect              String?      @map("sec_filament_effect")
+  flakeCompaction                String?      @map("flake_compaction")
+  irregularFlakeQuantity         String?      @map("irregular_flake_quantity")
+  roundFlakeQuantity             String?      @map("round_flake_quantity")
+  smallFlake                     String?      @map("small_flake")
+  mediumFlake                    String?      @map("medium_flake")
+  largeFlake                     String?      @map("large_flake")
+  suspendedCells                 String?      @map("suspended_cells")
+  spirilis                       String?
+  tetrads                        String?
+  zooglea                        String?
+  fibers                         String?
+  oil                            String?
+  ink                            String?
+  quantitySmallColony            String?      @map("quantity_small_colony")
+  quantityMediumColony           String?      @map("quantity_medium_colony")
+  quantityLargeColony            String?      @map("quantity_large_colony")
+  numberAmoeba                   String?      @map("number_amoeba")
+  amoebaActivity                 String?      @map("amoeba_activity")
+  numberFlagellate               String?      @map("number_flagellate")
+  flagellateActivity             String?      @map("flagellate_activity")
+  quantitySmallCiliate           String?      @map("quantity_small_ciliate")
+  smallCiliateActivity           String?      @map("small_ciliate_activity")
+  quantityMediumCiliate          String?      @map("quantity_medium_ciliate")
+  mediumCiliateActivity          String?      @map("medium_ciliate_activity")
+  quantityLargeCiliate           String?      @map("quantity_large_ciliate")
+  largeCiliateActivity           String?      @map("large_ciliate_activity")
+  quantityNotColonyCiliate       String?      @map("quantity_not_colony_ciliate")
+  notColonyCiliateActivity       String?      @map("not_colony_ciliate_activity")
+  quantityOutPeduncleCiliate     String?      @map("quantity_out_peduncle_ciliate")
+  outPeduncleCiliateActivity     String?      @map("out_peduncle_ciliate_activity")
+  quantityFixedWithBubbleCiliate String?      @map("quantity_fixed_with_bubble_ciliate")
+  fixedWithBubbleCiliateActivity String?      @map("fixed_with_bubble_ciliate_activity")
+  quantityFixedColonyCiliate     String?      @map("quantity_fixed_colony_ciliate")
+  fixedColonyCiliateActivity     String?      @map("fixed_colony_ciliate_activity")
+  quantityWanderingCiliate       String?      @map("quantity_wandering_ciliate")
+  wanderingCiliateActivity       String?      @map("wandering_ciliate_activity")
+  quantityCarnivorousCiliates    String?      @map("quantity_carnivorous_ciliates")
+  carnivorousCiliatesActivity    String?      @map("carnivorous_ciliates_activity")
+  quantitySuction                String?      @map("quantity_suction")
+  suctionActivity                String?      @map("suction_activity")
+  quantityThecameba              String?      @map("quantity_thecameba")
+  thecamebaActivity              String?      @map("thecameba_activity")
+  quantityRotifers               String?      @map("quantity_rotifers")
+  rotifersActivity               String?      @map("rotifers_activity")
+  quantityNematodes              String?      @map("quantity_nematodes")
+  nematodesActivity              String?      @map("nematodes_activity")
+  quantityGastrotrichium         String?      @map("quantity_gastrotrichium")
+  gastrotrichiumActivity         String?      @map("gastrotrichium_activity")
+  quantityAnnelids               String?      @map("quantity_annelids")
+  annelidsActivity               String?      @map("annelids_activity")
+
+  @@map("collects")
+}

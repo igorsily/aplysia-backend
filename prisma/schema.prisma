@@ -1,0 +1,307 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model bacteria {
+  id                                          Int                    @id @default(autoincrement())
+  name                                        String?                @db.VarChar(255)
+  namefictitious                              String?                @db.VarChar(255)
+  description                                 String?                @db.VarChar(255)
+  image                                       String?                @db.VarChar(255)
+  image_name                                  String?                @db.VarChar(255)
+  bacteriumDepartments                        bacteriumDepartments[]
+  collects_collects_first_bacteriumTobacteria collects[]             @relation("collects_first_bacteriumTobacteria")
+  collects_collects_sec_bacteriumTobacteria   collects[]             @relation("collects_sec_bacteriumTobacteria")
+}
+
+model bacteriumDepartments {
+  id            Int          @id @default(autoincrement())
+  bacterium_id  Int?
+  department_id Int?
+  bacteria      bacteria?    @relation(fields: [bacterium_id], references: [id], onDelete: NoAction, map: "bacteriumDepartments_ibfk_1")
+  departments   departments? @relation(fields: [department_id], references: [id], onDelete: NoAction, map: "bacteriumDepartments_ibfk_2")
+
+  @@index([bacterium_id], map: "bacterium_id")
+  @@index([department_id], map: "department_id")
+}
+
+model collect_points {
+  id          Int        @id @default(autoincrement())
+  reactor_id  Int?
+  name        String     @db.VarChar(255)
+  latitude    String?    @db.VarChar(255)
+  longitude   String?    @db.VarChar(255)
+  image       String?    @db.VarChar(255)
+  description String?    @db.VarChar(255)
+  active      Boolean?   @default(true)
+  reactors    reactors?  @relation(fields: [reactor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "collect_points_ibfk_1")
+  collects    collects[]
+
+  @@index([reactor_id], map: "reactor_id")
+}
+
+model collects {
+  id                                          Int              @id @default(autoincrement())
+  reactor_id                                  Int?
+  collectpoint_id                             Int?
+  responsible                                 Int?
+  analyst                                     Int?
+  step                                        Int
+  status                                      String           @db.VarChar(255)
+  sample_number                               String           @db.VarChar(255)
+  temperature                                 String?          @db.VarChar(255)
+  ph                                          String?          @db.VarChar(255)
+  oxygen                                      String?          @db.VarChar(255)
+  work_shift                                  String?          @db.VarChar(255)
+  analysis_time                               DateTime?        @db.DateTime(0)
+  first_bacterium                             Int?
+  first_abundance                             String?          @db.VarChar(255)
+  first_filament_effect                       String?          @db.VarChar(255)
+  sec_bacterium                               Int?
+  sec_abundance                               String?          @db.VarChar(255)
+  sec_filament_effect                         String?          @db.VarChar(255)
+  flake_compaction                            String?          @db.VarChar(255)
+  irregular_flake_quantity                    Int?
+  round_flake_quantity                        Int?
+  small_flakes                                Int?
+  medium_flakes                               Int?
+  large_flakes                                Int?
+  suspended_cells                             String?          @db.VarChar(255)
+  spirilis                                    String?          @db.VarChar(255)
+  tetrads                                     String?          @db.VarChar(255)
+  zooglea                                     String?          @db.VarChar(255)
+  fibers                                      String?          @db.VarChar(255)
+  oil                                         String?          @db.VarChar(255)
+  ink                                         String?          @db.VarChar(255)
+  quantity_small_colony                       Int?
+  quantity_medium_colony                      Int?
+  quantity_large_colony                       Int?
+  number_amoebas                              Int?
+  amoeba_activity                             String?          @db.VarChar(255)
+  number_flagellates                          Int?
+  flagellate_activity                         String?          @db.VarChar(255)
+  quantity_small_ciliates                     Int?
+  small_ciliates_activity                     String?          @db.VarChar(255)
+  quantity_middle_ciliates                    Int?
+  middle_ciliates_activity                    String?          @db.VarChar(255)
+  quantity_large_ciliates                     Int?
+  large_ciliates_activity                     String?          @db.VarChar(255)
+  quantity_not_colony_ciliates                Int?
+  not_colony_ciliates_activity                String?          @db.VarChar(255)
+  quantity_out_peduncle_ciliates              Int?
+  out_peduncle_ciliates_activity              String?          @db.VarChar(255)
+  quantity_fixed_with_bubble_ciliates         Int?
+  fixed_with_bubble_ciliates_activity         String?          @db.VarChar(255)
+  quantity_fixed_colony_ciliates              Int?
+  fixed_colony_ciliates_activity              String?          @db.VarChar(255)
+  quantity_wandering_ciliates                 Int?
+  wandering_ciliates_activity                 String?          @db.VarChar(255)
+  quantity_carnivorous_ciliates               Int?
+  carnivorous_ciliates_activity               String?          @db.VarChar(255)
+  quantity_suctions                           Int?
+  suctions_activity                           String?          @db.VarChar(255)
+  quantity_thecamebas                         Int?
+  thecamebas_activity                         String?          @db.VarChar(255)
+  quantity_rotifers                           Int?
+  rotifers_activity                           String?          @db.VarChar(255)
+  quantity_nematodes                          Int?
+  nematodes_activity                          String?          @db.VarChar(255)
+  quantity_gastrotrichium                     Int?
+  gastrotrichium_activity                     String?          @db.VarChar(255)
+  quantity_annelids                           Int?
+  annelids_activity                           String?          @db.VarChar(255)
+  reactors                                    reactors?        @relation(fields: [reactor_id], references: [id], onDelete: Cascade, map: "collects_ibfk_1")
+  collect_points                              collect_points?  @relation(fields: [collectpoint_id], references: [id], onDelete: Cascade, map: "collects_ibfk_2")
+  users_collects_responsibleTousers           users?           @relation("collects_responsibleTousers", fields: [responsible], references: [id], onDelete: Cascade, map: "collects_ibfk_3")
+  users_collects_analystTousers               users?           @relation("collects_analystTousers", fields: [analyst], references: [id], onDelete: Cascade, map: "collects_ibfk_4")
+  bacteria_collects_first_bacteriumTobacteria bacteria?        @relation("collects_first_bacteriumTobacteria", fields: [first_bacterium], references: [id], onDelete: Cascade, map: "collects_ibfk_5")
+  bacteria_collects_sec_bacteriumTobacteria   bacteria?        @relation("collects_sec_bacteriumTobacteria", fields: [sec_bacterium], references: [id], onDelete: Cascade, map: "collects_ibfk_6")
+  image_collects                              image_collects[]
+
+  @@index([analyst], map: "analyst")
+  @@index([collectpoint_id], map: "collectpoint_id")
+  @@index([first_bacterium], map: "first_bacterium")
+  @@index([reactor_id], map: "reactor_id")
+  @@index([responsible], map: "responsible")
+  @@index([sec_bacterium], map: "sec_bacterium")
+}
+
+model companies {
+  id                Int                 @id @default(autoincrement())
+  social_reason     String              @unique(map: "social_reason") @db.VarChar(255)
+  fantasy_name      String?             @db.VarChar(255)
+  document          String?             @db.VarChar(255)
+  createdAt         DateTime            @db.DateTime(0)
+  updatedAt         DateTime?           @db.DateTime(0)
+  historico_uploads historico_uploads[]
+  profiles          profiles[]
+  unity             unity[]
+  users             users[]
+}
+
+model departments {
+  id                   Int                    @id @default(autoincrement())
+  unity_id             Int?
+  social_reason        String?                @db.VarChar(255)
+  fantasy_name         String?                @db.VarChar(255)
+  responsible          String?                @db.VarChar(255)
+  description          String?                @db.VarChar(255)
+  bacteriumDepartments bacteriumDepartments[]
+  unity                unity?                 @relation(fields: [unity_id], references: [id], onDelete: NoAction, map: "departments_ibfk_1")
+  physicalChemicals    physicalChemicals[]
+  projects             projects[]
+  reactors             reactors[]
+  users                users[]
+
+  @@index([unity_id], map: "unity_id")
+}
+
+model historico_uploads {
+  id                String              @id @db.Char(36)
+  name_file         String              @db.VarChar(255)
+  company_id        Int
+  created_at        DateTime            @db.DateTime(0)
+  companies         companies           @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "historico_uploads_ibfk_1")
+  physicalChemicals physicalChemicals[]
+
+  @@index([company_id], map: "company_id")
+}
+
+model image_collects {
+  id         Int       @id @default(autoincrement())
+  collect_id Int?
+  name       String?   @db.VarChar(255)
+  url        String?   @db.VarChar(255)
+  collects   collects? @relation(fields: [collect_id], references: [id], onDelete: Cascade, map: "image_collects_ibfk_1")
+
+  @@index([collect_id], map: "collect_id")
+}
+
+model module_profiles {
+  id          Int       @id @default(autoincrement())
+  profile_id  Int?
+  module_id   Int?
+  permissions String?   @db.VarChar(4)
+  createdAt   DateTime  @db.DateTime(0)
+  updatedAt   DateTime  @db.DateTime(0)
+  profiles    profiles? @relation(fields: [profile_id], references: [id], onDelete: Cascade, map: "module_profiles_ibfk_1")
+  modules     modules?  @relation(fields: [module_id], references: [id], onDelete: Cascade, map: "module_profiles_ibfk_2")
+
+  @@index([module_id], map: "module_id")
+  @@index([profile_id], map: "profile_id")
+}
+
+model modules {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique(map: "name") @db.VarChar(255)
+  createdAt       DateTime          @db.DateTime(0)
+  updatedAt       DateTime          @db.DateTime(0)
+  module_profiles module_profiles[]
+}
+
+model physicalChemicals {
+  id                    Int                @id @default(autoincrement())
+  departament_id        Int?
+  collectDate           DateTime           @db.DateTime(0)
+  place                 String?            @db.VarChar(255)
+  position              String?            @db.VarChar(255)
+  parameter             String?            @db.VarChar(255)
+  unitParameter         String?            @db.VarChar(255)
+  result                Decimal?           @db.Decimal(10, 0)
+  historico_upload_id   String?            @db.Char(36)
+  local_ponto_parametro String?            @db.VarChar(255)
+  departments           departments?       @relation(fields: [departament_id], references: [id], onDelete: Cascade, map: "physicalChemicals_ibfk_1")
+  historico_uploads     historico_uploads? @relation(fields: [historico_upload_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "physicalChemicals_ibfk_2")
+
+  @@index([departament_id], map: "departament_id")
+  @@index([historico_upload_id], map: "historico_upload_id")
+}
+
+model profiles {
+  id              Int               @id @default(autoincrement())
+  company_id      Int?
+  name            String            @unique(map: "name") @db.VarChar(255)
+  module_profiles module_profiles[]
+  companies       companies?        @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profiles_ibfk_1")
+  users           users[]
+
+  @@index([company_id], map: "company_id")
+}
+
+model projects {
+  id             Int          @id @default(autoincrement())
+  departament_id Int?
+  name           String       @db.VarChar(255)
+  start_date     DateTime?    @db.Date
+  end_date       DateTime?    @db.Date
+  description    String?      @db.VarChar(255)
+  active         Boolean?     @default(true)
+  departments    departments? @relation(fields: [departament_id], references: [id], onDelete: Cascade, map: "projects_ibfk_1")
+
+  @@index([departament_id], map: "departament_id")
+}
+
+model reactors {
+  id             Int              @id @default(autoincrement())
+  department_id  Int?
+  name           String           @db.VarChar(255)
+  description    String?          @db.VarChar(255)
+  active         Boolean?         @default(true)
+  collect_points collect_points[]
+  collects       collects[]
+  departments    departments?     @relation(fields: [department_id], references: [id], onDelete: Cascade, map: "reactors_ibfk_1")
+
+  @@index([department_id], map: "department_id")
+}
+
+model unity {
+  id            Int           @id @default(autoincrement())
+  company_id    Int?
+  social_reason String?       @db.VarChar(255)
+  fantasy_name  String?       @db.VarChar(255)
+  document      String?       @db.VarChar(255)
+  departments   departments[]
+  companies     companies?    @relation(fields: [company_id], references: [id], onDelete: NoAction, map: "unity_ibfk_1")
+  users         users[]
+
+  @@index([company_id], map: "company_id")
+}
+
+model users {
+  id                                   Int          @id @default(autoincrement())
+  profile_id                           Int?
+  company_id                           Int?
+  unity_id                             Int?
+  department_id                        Int?
+  name                                 String       @db.VarChar(255)
+  celphone                             String?      @db.VarChar(255)
+  telphone                             String?      @db.VarChar(255)
+  email                                String       @unique(map: "email") @db.VarChar(255)
+  password                             String       @db.VarChar(255)
+  active                               Boolean?     @default(true)
+  deleted                              Boolean?     @default(false)
+  collects_collects_responsibleTousers collects[]   @relation("collects_responsibleTousers")
+  collects_collects_analystTousers     collects[]   @relation("collects_analystTousers")
+  profiles                             profiles?    @relation(fields: [profile_id], references: [id], onDelete: Cascade, map: "users_ibfk_1")
+  companies                            companies?   @relation(fields: [company_id], references: [id], map: "users_ibfk_2")
+  unity                                unity?       @relation(fields: [unity_id], references: [id], map: "users_ibfk_3")
+  departments                          departments? @relation(fields: [department_id], references: [id], map: "users_ibfk_4")
+
+  @@index([company_id], map: "company_id")
+  @@index([department_id], map: "department_id")
+  @@index([profile_id], map: "profile_id")
+  @@index([unity_id], map: "unity_id")
+}
+
+model wikifields {
+  id          Int       @id @default(autoincrement())
+  name        String?   @db.VarChar(255)
+  description String?   @db.VarChar(255)
+  createdAt   DateTime  @db.DateTime(0)
+  updatedAt   DateTime? @db.DateTime(0)
+}
